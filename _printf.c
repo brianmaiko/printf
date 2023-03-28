@@ -1,84 +1,64 @@
-#include "main.h"
-#include <stdarg.h>
 #include <unistd.h>
+#include <stdarg.h>
+#include "main.h"
+
 /**
- * _putchar - writes a character to stdout
- * @c: The character to print
+ * _printf - prints a formatted string to stdout
+ * @format: format string containing directives
  *
- * Return: 1 on success, -1 on error
+ * Return: number of characters printed (excluding null byte)
  */
-int _putchar(char c)
-{
-	return (write(1, &c, 1));
-}
-/**
- * _printf - produces output according to a format.
- * @format: A string containing zero or more directives
- *
- * Return: The number of characters printed
- * (excluding the null byte used to end output to strings)
- */
+
 int _printf(const char *format, ...)
 {
 	va_list args;
-	int i = 0, count = 0;
-
-	if (!format)
-		return (-1);
+	int count = 0;
 
 	va_start(args, format);
-	while (format[i])
-	{
-		if (format[i] == '%')
-		{
-			i++;
 
-			switch (format[i])
+	while (*format)
+	{
+		if (*format == '%')
+		{
+			switch (*(++format))
 			{
 				case 'c':
-				count += _putchar(va_arg(args, int));
-				break;
-
+					count += write(1, (char *) &va_arg(args, int), 1);
+					break;
 				case 's':
-				count += _print_str(va_arg(args, char *));
-				break;
-
+					count += write(1, va_arg(args, char *), _strlen(va_arg(args, char *)));
+					break;
 				case '%':
-				count += _putchar('%');
-				break;
-
+					count += write(1, "%", 1);
+					break;
 				default:
-				count += _putchar('%');
-				count += _putchar(format[i]);
-				break;
+					break;
 			}
 		}
 		else
 		{
-			count += _putchar(format[i]);
+			count += write(1, format, 1);
 		}
-		i++;
+		format++;
 	}
 	va_end(args);
 	return (count);
 }
+
 /**
- * _print_str - prints a string
- * @str: The string to print
+ * _strlen - returns the length of a string
+ * @s: string to measure
  *
- * Return: The number of characters printed
+ * Return: length of s
  */
-int _print_str(char *str)
+
+int _strlen(char *s)
 {
-	int i = 0;
+	int len = 0;
 
-	if (!str)
-		str = "(null)";
-
-	while (str[i])
+	while (*(s++))
 	{
-		_putchar(str[i]);
-		i++;
+		len++;
 	}
-	return (i);
+	return (len);
 }
